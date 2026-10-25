@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบเข้าสู่ระบบ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="card">
+        <div id="step-1">
+            <h2>เข้าสู่ระบบ</h2>
+            <p>กรอกหมายเลขโทรศัพท์เพื่อเริ่มต้นใช้งาน</p>
+            <form id="phone-form" onsubmit="goToStep2(event)">
+                <div class="form-group">
+                    <label for="phone">หมายเลขโทรศัพท์</label>
+                    <input type="tel" id="phone" placeholder="08XXXXXXXX" maxlength="10" pattern="[0-9]{10}" required>
+                </div>
+                <button type="submit" class="btn">ถัดไป</button>
+            </form>
+        </div>
+
+        <div id="step-2" class="hidden">
+            <h2>ยืนยันข้อมูลผู้ใช้</h2>
+            <p>กรุณากรอกชื่อจริงเพื่อเข้าสู่ระบบ</p>
+            <form id="name-form" onsubmit="completeLogin(event)">
+                <div class="form-group">
+                    <label for="fullname">ชื่อ - นามสกุล</label>
+                    <input type="text" id="fullname" >
+                </div>
+                <button type="submit" class="btn">เข้าสู่ระบบ</button>
+                <button type="button" class="btn btn-secondary" onclick="goToStep1()">ย้อนกลับ</button>
+            </form>
+        </div>
+
+        <div id="step-success" class="hidden">
+            <h2 class="success-title">เข้าสู่ระบบสำเร็จ!</h2>
+            <p id="welcome-message"></p>
+            <button class="btn btn-secondary" onclick="location.reload()">ออกจากระบบ (รีเซ็ต)</button>
+        </div>
+    </div>
+
+    <script>
+        // เก็บข้อมูลชั่วคราว
+        let phoneNumber = "";
+
+        // ฟังก์ชันเมื่อกดถัดไปจากหน้าแรก
+        function goToStep2(event) {
+            event.preventDefault(); // ป้องกันการ reload หน้า
+            
+            phoneNumber = document.getElementById('phone').value;
+            
+            // ซ่อนขั้นตอนที่ 1 และแสดงขั้นตอนที่ 2
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+        }
+
+        // ฟังก์ชันย้อนกลับไปสเต็ปที่ 1
+        function goToStep1() {
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-1').classList.remove('hidden');
+        }
+
+        // ฟังก์ชันล็อกอินสำเร็จ
+        function completeLogin(event) {
+            event.preventDefault();
+            
+            const fullName = document.getElementById('fullname').value;
+
+            // บันทึกลง localStorage (จำลองว่าเซสชันยังคงอยู่แม้รีเฟรชหน้า)
+            localStorage.setItem("userPhone", phoneNumber);
+            localStorage.setItem("userName", fullName);
+
+            // แสดงข้อความต้อนรับ
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-success').classList.remove('hidden');
+            
+            document.getElementById('welcome-message').innerHTML = `
+                ยินดีต้อนรับคุณ <strong>${fullName}</strong><br>
+                เบอร์โทรศัพท์: ${phoneNumber}
+            `;
+        }
+    </script>
+</body>
+</html>
